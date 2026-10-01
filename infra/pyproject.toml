@@ -1,0 +1,15 @@
+[project]
+name = "infra"
+version = "0.1.0"
+description = "Jal-Saathi infra module"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aws-cdk-lib"
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff"
+]

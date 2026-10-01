@@ -1,0 +1,16 @@
+[project]
+name = "data"
+version = "0.1.0"
+description = "Jal-Saathi data module"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas",
+    "requests"
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff"
+]

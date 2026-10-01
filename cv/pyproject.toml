@@ -1,0 +1,17 @@
+[project]
+name = "cv"
+version = "0.1.0"
+description = "Jal-Saathi cv module"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "torch",
+    "torchvision",
+    "onnx"
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff"
+]

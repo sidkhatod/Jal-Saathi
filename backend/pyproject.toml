@@ -1,0 +1,15 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Jal-Saathi backend module"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "boto3"
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff"
+]
