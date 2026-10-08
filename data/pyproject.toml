@@ -5,8 +5,16 @@ description = "Jal-Saathi data module"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "boto3>=1.43.109",
+    "duckdb>=1.5.6",
+    "html5lib>=1.1",
+    "lxml>=6.1.3",
+    "openpyxl>=3.1.5",
     "pandas",
-    "requests"
+    "pyarrow>=25.0.1",
+    "pydantic>=2.14.0",
+    "pyyaml>=6.0.3",
+    "requests",
 ]
 
 [dependency-groups]

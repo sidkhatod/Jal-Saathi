@@ -1,0 +1,5 @@
+{
+  "farmer_id": {"S": "test-hash-123"},
+  "state": {"S": "Maharashtra"},
+  "district": {"S": "Pune"}
+}

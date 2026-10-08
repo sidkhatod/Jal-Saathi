@@ -1,0 +1,11 @@
+name: "Paddy Blast"
+crop: "paddy"
+problem_name: "blast"
+type: "disease"
+growth_stage: "all"
+symptoms: "Spindle-shaped or diamond-like eye spots with an ash-grey or whitish center and dark reddish-brown border on leaves. Dark brown rot at the collar."
+organic_option: "Soak seeds in water containing Pseudomonas fluorescens (10g/kg) or mix with Trichoderma harzianum (5g/kg)."
+chemical_option: "Trifloxystrobin 25% + tebuconazole 50% (Nativo 75 WG) at 0.4 g/l, or Tricyclazole 45% + hexaconazole 10% WG at 1g/l."
+weather_constraints: "Relative humidity > 90% (prolonged fog, morning dew) and temperatures of 20°C to 28°C."
+source_url: "https://biolens-ai.com/blog/rice-blast-disease-identification-treatment/"
+reviewed: true

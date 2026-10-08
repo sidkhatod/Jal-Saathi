@@ -5,7 +5,8 @@ description = "Jal-Saathi infra module"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "aws-cdk-lib"
+    "aws-cdk-lib",
+    "constructs>=10.8.1",
 ]
 
 [dependency-groups]

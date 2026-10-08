@@ -1,0 +1,11 @@
+name: "Wheat Rust"
+crop: "wheat"
+problem_name: "rust"
+type: "disease"
+growth_stage: "all"
+symptoms: "Circular pinhead-sized brown eruptive lesions or yellow pustules on leaves, turning yellow and withering off early."
+organic_option: "Maintain proper air flow and regulate moisture. Follow wider spacing of plantation."
+chemical_option: "Spray 0.2% Karathane (Dinocap 30% EC) or Sulfex (80WP) 0.2%."
+weather_constraints: "Temperatures of 22-26°C and high relative humidity above 70%."
+source_url: "https://silks.csb.gov.in/dhubri/diseases-and-pests-of-food-plants/"
+reviewed: true
