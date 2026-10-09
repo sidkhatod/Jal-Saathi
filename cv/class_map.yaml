@@ -1,0 +1,23 @@
+canonical_classes:
+  rice:
+    - leaf blast
+    - brown spot
+    - bacterial leaf blight
+    - sheath blight
+    - narrow brown spot
+    - leaf scald
+    - healthy
+  wheat:
+    - yellow rust
+    - brown rust
+    - black rust
+    - powdery mildew
+    - septoria
+    - healthy
+
+folder_mapping:
+  # Map raw dataset folder names to canonical labels above.
+  # Example:
+  # "Bacterial leaf blight": "bacterial leaf blight"
+  # "Brown spot": "brown spot"
+  # "Leaf smut": null  # Use null if it doesn't map to a canonical class

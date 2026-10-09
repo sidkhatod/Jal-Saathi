@@ -1,0 +1,16 @@
+name: "paddy"
+# FAKE values for testing
+kc_ini: 1.0
+kc_mid: 1.2
+kc_end: 0.8
+
+max_root_depth_m: 0.5
+depletion_fraction: 0.2
+
+stage_ini_days: 10
+stage_dev_days: 10
+stage_mid_days: 10
+stage_late_days: 10
+
+percolation_rate: 5.0
+bund_height: 100.0
