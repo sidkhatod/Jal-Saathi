@@ -82,7 +82,7 @@ class PaddyEnv(gym.Env):
 
     def _get_obs(self):
         stage_idx = self._get_stage_index(self.day_of_season)
-        forecast = get_forecast(self.weather_data, self.current_day, self.noise_std_rain, self.noise_std_et0)
+        forecast = get_forecast(self.weather_data, self.current_day, self.noise_std_rain, self.noise_std_et0, self.np_random)
         
         obs = np.array([self.depth, stage_idx], dtype=np.float32)
         obs = np.concatenate([obs, forecast, [self.days_since_last_irr]], dtype=np.float32)

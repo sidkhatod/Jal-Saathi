@@ -8,6 +8,10 @@ class Advisory(BaseModel):
     type: str # e.g. "disease", "pest", "deficiency"
     growth_stage: Optional[str] = None
     symptoms: Optional[str] = None
-    control_measures: Optional[List[str]] = None
+    organic_option: Optional[str] = None
+    chemical_option: Optional[str] = None
+    weather_constraints: Optional[str] = None
     source_url: Optional[str] = None
+    source_org: Optional[str] = None
+    source_quote: Optional[str] = None
     reviewed: bool = False

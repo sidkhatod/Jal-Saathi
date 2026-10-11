@@ -42,12 +42,12 @@ class FixedIntervalPolicy:
         return 0
 
 class WheatThresholdPolicy:
-    def __init__(self, threshold_norm_depletion=0.8, action_idx=2):
-        self.threshold = threshold_norm_depletion
+    def __init__(self, action_idx=2): # e.g. 2 = 40mm
         self.action_idx = action_idx
 
     def predict(self, obs, env):
-        norm_dep = obs[0]
-        if norm_dep > self.threshold:
+        depletion = env.unwrapped.dr
+        raw = env.unwrapped.raw
+        if depletion >= raw:
             return self.action_idx
         return 0

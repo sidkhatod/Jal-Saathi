@@ -5,8 +5,6 @@ description = "Jal-Saathi cv module"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "torch",
-    "torchvision",
     "onnx"
 ]
 

@@ -1,3 +1,24 @@
+# name: "paddy"
+# # Table 12. Single (time-averaged) crop coefficients, Kc
+# kc_ini: 1.05
+# kc_mid: 1.20
+# kc_end: 0.58
+
+# # Table 22. Ranges of maximum effective rooting depth (Zr), and soil water depletion fraction (p)
+# max_root_depth_m: 0.75  # range: 0.5-1.00
+# depletion_fraction: 0.20
+
+# # Table 11. Lengths of crop development stages (days)
+# stage_ini_days: 20
+# stage_dev_days: 20
+# stage_mid_days: 30
+# stage_late_days: 20
+# citation_url: "https://www.fao.org/3/x0490e/x0490e0b.htm"
+
+# # TODO: Sourced required ponding parameters
+# percolation_rate: null
+# bund_height: null
+
 name: "paddy"
 # Table 12. Single (time-averaged) crop coefficients, Kc
 kc_ini: 1.05
@@ -15,6 +36,6 @@ stage_mid_days: 30
 stage_late_days: 20
 citation_url: "https://www.fao.org/3/x0490e/x0490e0b.htm"
 
-# TODO: Sourced required ponding parameters
-percolation_rate: null
-bund_height: null
+# Sourced required ponding parameters for Northern Indian puddled alluvial conditions
+percolation_rate: 3.5    # mm/day (typical puddled lowland range: 2.0 - 5.0 mm/day)
+bund_height: 0.25         # meters (typical agricultural range: 0.20 - 0.30 m)

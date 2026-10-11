@@ -30,18 +30,21 @@ def load_crop_config(crop_name: str, required_keys: list) -> dict:
         
     return config
 
-def get_forecast(daily_weather: list, current_day: int, noise_std_rain: float = 0.0, noise_std_et0: float = 0.0) -> np.ndarray:
+def get_forecast(daily_weather: list, current_day: int, noise_std_rain: float = 0.0, noise_std_et0: float = 0.0, np_random=None) -> np.ndarray:
     """
     Returns a 3-day forecast of [Rain, ET0] starting from current_day.
     Forecast = actual + noise.
     """
+    if np_random is None:
+        np_random = np.random
+
     forecast = []
     for offset in range(3):
         day_idx = current_day + offset
         if day_idx < len(daily_weather):
             w = daily_weather[day_idx]
-            rain = max(0.0, w.precipitation_sum + np.random.normal(0, noise_std_rain))
-            et0 = max(0.0, w.et0_fao_evapotranspiration + np.random.normal(0, noise_std_et0))
+            rain = max(0.0, w.precipitation_sum + np_random.normal(0, noise_std_rain))
+            et0 = max(0.0, w.et0_fao_evapotranspiration + np_random.normal(0, noise_std_et0))
             forecast.extend([rain, et0])
         else:
             # Pad with zeros if end of season

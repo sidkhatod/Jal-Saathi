@@ -40,5 +40,17 @@ class DataStack(Stack):
             removal_policy=RemovalPolicy.RETAIN,
         )
 
+        from aws_cdk import aws_secretsmanager as secretsmanager
+        # Twilio Secret
+        self.twilio_secret = secretsmanager.Secret(
+            self, "TwilioSecret",
+            secret_name=f"jal-saathi-twilio-{env_name}",
+            description="Twilio credentials (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SECRET_KEY for HMAC)",
+            generate_secret_string=secretsmanager.SecretStringGenerator(
+                secret_string_template='{"TWILIO_ACCOUNT_SID": "dummy", "TWILIO_AUTH_TOKEN": "dummy", "TWILIO_SECRET_KEY": "dummy"}',
+                generate_string_key="dummy_key"
+            )
+        )
+
         # Tag all resources in this stack
         Tags.of(self).add("Project", "jal-saathi")

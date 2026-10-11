@@ -8,7 +8,7 @@ from constructs import Construct
 class RolesStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, env_name: str, 
                  photos_bucket, datasets_bucket, 
-                 farms_table, plots_table, observations_table, advisories_table, **kwargs) -> None:
+                 farms_table, plots_table, observations_table, advisories_table, twilio_secret=None, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         self.lambda_role = iam.Role(
@@ -31,6 +31,10 @@ class RolesStack(Stack):
         plots_table.grant_read_write_data(self.lambda_role)
         observations_table.grant_read_write_data(self.lambda_role)
         advisories_table.grant_read_write_data(self.lambda_role)
+
+        # SecretsManager
+        if twilio_secret:
+            twilio_secret.grant_read(self.lambda_role)
 
         # Bedrock
         # Note: We scope to all foundation models in the region because exact model ARNs vary.

@@ -3,7 +3,8 @@ import sys
 import json
 import argparse
 import random
-import requests
+import importlib.util
+import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
@@ -12,46 +13,36 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from data.soil_hydraulics import TEXTURE_LOOKUP
 from data.weather import DailyForecast
 
-from stable_baselines3 import PPO
 from envs.wheat import WheatEnv
 from envs.paddy import PaddyEnv
 from baselines import ContinuousFloodingPolicy, AWDPPolicy, FixedIntervalPolicy, WheatThresholdPolicy
 
-def fetch_historical_weather(lat, lon, start_date, end_date):
-    """Fetch from Open-Meteo archive API."""
-    url = "https://archive-api.open-meteo.com/v1/archive"
-    params = {
-        "latitude": lat,
-        "longitude": lon,
-        "start_date": start_date,
-        "end_date": end_date,
-        "daily": ["temperature_2m_max", "temperature_2m_min", "precipitation_sum", "et0_fao_evapotranspiration"],
-        "timezone": "auto"
-    }
+def load_weather_from_parquet(district, start_date, end_date):
+    """Load historical weather from local parquet file, no network calls."""
+    parquet_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'processed', f'weather_{district.lower()}_2010-2023.parquet')
+    if not os.path.exists(parquet_path):
+        raise FileNotFoundError(f"Weather data not found at {parquet_path}. Run fetch_weather_history.py first.")
+        
+    df = pd.read_parquet(parquet_path)
+    df['date'] = pd.to_datetime(df['date'])
     
-    cache_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'processed', f'weather_archive_{lat}_{lon}_{start_date}_{end_date}.json')
-    if os.path.exists(cache_path):
-        with open(cache_path, 'r') as f:
-            data = json.load(f)
-    else:
-        resp = requests.get(url, params=params)
-        resp.raise_for_status()
-        data = resp.json()
-        os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-        with open(cache_path, 'w') as f:
-            json.dump(data, f)
-            
-    daily = data.get('daily', {})
+    start_dt = pd.to_datetime(start_date)
+    end_dt = pd.to_datetime(end_date)
+    
+    mask = (df['date'] >= start_dt) & (df['date'] <= end_dt)
+    df_filtered = df.loc[mask].copy()
+    df_filtered.sort_values('date', inplace=True)
+    
     results = []
-    for i in range(len(daily.get('time', []))):
+    for _, row in df_filtered.iterrows():
         results.append(DailyForecast(
-            date=daily['time'][i],
-            precipitation_sum=daily['precipitation_sum'][i] if daily['precipitation_sum'][i] is not None else 0.0,
+            date=row['date'].strftime('%Y-%m-%d'),
+            precipitation_sum=float(row['precipitation_sum']),
             precipitation_probability_max=0,
             wind_speed_10m_max=0.0,
-            temperature_2m_max=daily['temperature_2m_max'][i] if daily['temperature_2m_max'][i] is not None else 25.0,
-            temperature_2m_min=daily['temperature_2m_min'][i] if daily['temperature_2m_min'][i] is not None else 15.0,
-            et0_fao_evapotranspiration=daily['et0_fao_evapotranspiration'][i] if daily['et0_fao_evapotranspiration'][i] is not None else 4.0
+            temperature_2m_max=float(row['temperature_2m_max']),
+            temperature_2m_min=float(row['temperature_2m_min']),
+            et0_fao_evapotranspiration=float(row['et0_fao_evapotranspiration'])
         ))
     return results
 
@@ -91,6 +82,7 @@ class RandomizedEnvWrapper:
 def export_onnx(model, save_path):
     import torch
     import torch.onnx
+    import onnxruntime as ort
     
     class OnnxablePolicy(torch.nn.Module):
         def __init__(self, policy):
@@ -109,19 +101,29 @@ def export_onnx(model, save_path):
         input_names=["obs"],
         output_names=["action"]
     )
+    
+    # Parity Assertion
+    ort_sess = ort.InferenceSession(save_path)
+    sb3_action, _ = model.predict(dummy_input.numpy(), deterministic=True)
+    ort_action = ort_sess.run(None, {'obs': dummy_input.numpy()})[0]
+    
+    # Check if they are exactly identical (discrete action)
+    assert np.allclose(sb3_action, ort_action), f"ONNX parity failed! SB3: {sb3_action}, ONNX: {ort_action}"
+    print("ONNX export parity check passed!")
 
-def evaluate_policy(name, policy, env, num_episodes=1):
+def evaluate_policy_single_env(policy, env, num_episodes=1, start_seed=42):
     all_rewards, all_water, all_stress, all_yield = [], [], [], []
     replay = []
     
     for ep in range(num_episodes):
-        obs, _ = env.reset(seed=42+ep)
+        obs, _ = env.reset(seed=start_seed+ep)
         done = False
         ep_reward = 0
         ep_replay = []
         
         while not done:
             if hasattr(policy, 'predict'):
+                from stable_baselines3 import PPO
                 if isinstance(policy, PPO):
                     action, _ = policy.predict(obs, deterministic=True)
                 else:
@@ -152,88 +154,102 @@ def evaluate_policy(name, policy, env, num_episodes=1):
             
         replay.append(ep_replay)
         
-    avg_metrics = {
-        "reward": np.mean(all_rewards),
-        "water_mm": np.mean(all_water),
-        "stress_days": np.mean(all_stress)
-    }
-    if all_yield:
-        avg_metrics["proxy_yield"] = np.mean(all_yield)
-        
-    return avg_metrics, replay
+    return all_rewards, all_water, all_stress, all_yield, replay
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--crop", choices=["wheat", "paddy"], required=True)
     parser.add_argument("--timesteps", type=int, default=50000)
+    parser.add_argument("--smoke", action="store_true", help="Run a quick smoke test")
     args = parser.parse_args()
     
-    # Coordinates for a pilot district (e.g. Karnal, Haryana)
-    lat, lon = 29.68, 76.99
+    if not (os.path.exists("/kaggle/working") or "SM_MODEL_DIR" in os.environ or importlib.util.find_spec("google.colab")):
+        print("Training runs on Kaggle/AWS only")
+        sys.exit(2)
+        
+    if args.smoke:
+        args.timesteps = 20000
+        districts = ["Karnal"]
+        test_years = [2021]
+    else:
+        districts = ["Karnal", "Kurukshetra"]
+        test_years = [2021, 2022, 2023]
+        
+    # Train on 2011-2020 (10 years) for Karnal only (for simplicity in this script)
+    train_weather = load_weather_from_parquet("Karnal", "2011-01-01", "2020-12-31")
     
-    # Train years: 2020 to 2022
-    train_weather = fetch_historical_weather(lat, lon, "2020-01-01", "2022-12-31")
-    # Test year: 2023
-    test_weather = fetch_historical_weather(lat, lon, "2023-01-01", "2023-12-31")
+    start_day_crop = 319 if args.crop == 'wheat' else 166
     
-    # Find start day approx for crop. Wheat: ~Nov 15 (day 319). Paddy: ~Jun 15 (day 166).
-    start_day_train = 319 if args.crop == 'wheat' else 166
-    start_day_test = 319 if args.crop == 'wheat' else 166
+    train_env = RandomizedEnvWrapper(args.crop, train_weather, start_day_crop)
     
-    # Train Env
-    train_env = RandomizedEnvWrapper(args.crop, train_weather, start_day_train)
-    
-    # Model
     print(f"Training PPO on {args.crop} for {args.timesteps} timesteps...")
-    model = PPO("MlpPolicy", train_env, verbose=1)
+    from stable_baselines3 import PPO
+    model = PPO("MlpPolicy", train_env, verbose=0)
     model.learn(total_timesteps=args.timesteps)
     
-    # Test Env (deterministic start day, fixed soil texture for fair comparison)
-    soil = TEXTURE_LOOKUP['loam']
+    # Baselines
     if args.crop == 'wheat':
-        test_env = WheatEnv(test_weather, soil, start_day=start_day_test)
-        baselines = {
+        policies = {
+            "PPO": model,
             "Fixed-Interval": FixedIntervalPolicy(interval_days=10, action_idx=2),
-            "Threshold-based": WheatThresholdPolicy(threshold_norm_depletion=0.7, action_idx=2)
+            "Threshold-based": WheatThresholdPolicy(action_idx=2)
         }
     else:
-        test_env = PaddyEnv(test_weather, start_day=start_day_test)
-        baselines = {
+        policies = {
+            "PPO": model,
             "Continuous Flooding": ContinuousFloodingPolicy(),
             "AWD": AWDPPolicy(),
             "Fixed-Interval": FixedIntervalPolicy(interval_days=7, action_idx=2)
         }
         
-    # Evaluate
-    print("\n--- Evaluation on 2023 Held-Out Year ---")
-    results = {}
-    replays = {}
+    print(f"\n--- Evaluation over {len(test_years)} held-out years across districts: {districts} ---")
     
-    # PPO
-    metrics, ppo_replay = evaluate_policy("PPO", model, test_env)
-    results["PPO"] = metrics
-    replays["PPO"] = ppo_replay[0]
+    all_results = {p_name: {"water": [], "stress": [], "yield": []} for p_name in policies.keys()}
+    replays = {p_name: [] for p_name in policies.keys()}
     
-    # Baselines
-    for name, policy in baselines.items():
-        metrics, bl_replay = evaluate_policy(name, policy, test_env)
-        results[name] = metrics
-        replays[name] = bl_replay[0]
+    for district in districts:
+        for year in test_years:
+            weather = load_weather_from_parquet(district, f"{year}-01-01", f"{year}-12-31")
+            soil = TEXTURE_LOOKUP['loam']
+            
+            if args.crop == 'wheat':
+                env = WheatEnv(weather, soil, start_day=start_day_crop)
+            else:
+                env = PaddyEnv(weather, start_day=start_day_crop)
+                
+            for p_name, policy in policies.items():
+                _, water, stress, yld, replay = evaluate_policy_single_env(policy, env, num_episodes=1, start_seed=year)
+                all_results[p_name]["water"].extend(water)
+                all_results[p_name]["stress"].extend(stress)
+                all_results[p_name]["yield"].extend(yld)
+                # Just save the first trajectory of the first year evaluated for the season replay json
+                if not replays[p_name]:
+                    replays[p_name] = replay[0]
+
+    # Print Table
+    print(f"{'Strategy':<20} | {'Water (mm)':<15} | {'Stress Days':<15} | {'Proxy Yield':<15}")
+    print("-" * 72)
+    for p_name in policies.keys():
+        w_mean, w_std = np.mean(all_results[p_name]["water"]), np.std(all_results[p_name]["water"])
+        s_mean, s_std = np.mean(all_results[p_name]["stress"]), np.std(all_results[p_name]["stress"])
         
-    for name, m in results.items():
-        print(f"{name}:")
-        for k, v in m.items():
-            print(f"  {k}: {v:.2f}")
+        y_str = "N/A"
+        if all_results[p_name]["yield"]:
+            y_mean, y_std = np.mean(all_results[p_name]["yield"]), np.std(all_results[p_name]["yield"])
+            y_str = f"{y_mean:.2f} ± {y_std:.2f}"
+            
+        print(f"{p_name:<20} | {w_mean:.0f} ± {w_std:<9.0f} | {s_mean:.1f} ± {s_std:<9.1f} | {y_str:<15}")
             
     # Export Artifacts
     artifacts_dir = os.path.join(os.path.dirname(__file__), '..', 'artifacts')
     os.makedirs(artifacts_dir, exist_ok=True)
     
     export_onnx(model, os.path.join(artifacts_dir, f"ppo_{args.crop}.onnx"))
+    
     with open(os.path.join(artifacts_dir, f"{args.crop}_season_replay.json"), 'w') as f:
         json.dump(replays, f, indent=2)
         
-    print(f"Exports saved to {artifacts_dir}")
+    print(f"\nExports saved to {artifacts_dir}")
 
 if __name__ == "__main__":
     main()
