@@ -19,17 +19,13 @@ This module contains two `gymnasium` environments for learning irrigation polici
 - Default noise parameters: $\sigma_{\text{Rain}} = 1.0$ mm, $\sigma_{ET_0} = 0.2$ mm.
 
 ### 3. Reward Formulation
-The daily reward is calculated as:
+The daily reward is calculated strictly as:
 - **Water Penalty**: $-0.01$ per mm of water applied.
 - **Stress Penalty**: $-1.0$ per stress day.
-- **Terminal Yield Proxy**: 
-  - **Wheat**: $+100 \times \text{Relative Yield}$
-  - **Paddy**: $-50 \times (\text{Stress Days} / \text{Total Days})$
+- **Reward**: `Reward = -water penalty - stress penalty` only (no terminal yield bonus).
 
 ### 4. Yield Proxy ($K_y$)
-- **Wheat**: Uses the FAO-33 empirical yield response factor formula: $1 - Y_a/Y_m = K_y (1 - ET_a / ET_c)$. The seasonal $K_y$ for wheat is fixed at $1.05$. 
-  - **Source**: FAO-33 (Doorenbos and Kassam, 1979), *Table 24. Yield Response Factor (Ky)*, Row: "Winter Wheat".
-- **Paddy**: *Not used.* Since robust stage-specific $K_y$ values for paddy ponding are highly variable and context-dependent, PaddyEnv falls back strictly to penalizing cumulative stress days instead.
+- **Not used**: $K_y$ has been removed entirely (the previously cited "FAO-33 Table 24, 1.05" cannot be independently verified). Both WheatEnv and PaddyEnv evaluate and penalize water stress directly via cumulative stress days rather than an unverified empirical yield multiplier.
 
 ### 5. Initial Conditions
 - **WheatEnv**: Starts at field capacity, meaning root-zone depletion $D_r = 0.0$ mm.

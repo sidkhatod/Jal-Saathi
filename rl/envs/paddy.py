@@ -1,7 +1,11 @@
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
-from rl.utils import load_crop_config, get_forecast
+try:
+    from rl.utils import load_crop_config, get_forecast
+except ImportError:
+    from utils import load_crop_config, get_forecast
+
 
 class PaddyEnv(gym.Env):
     """
@@ -134,14 +138,8 @@ class PaddyEnv(gym.Env):
         terminated = self.day_of_season >= self.total_days or self.current_day >= len(self.weather_data)
         truncated = False
         
-        # Reward
+        # Reward: -water penalty - stress penalty only
         reward = -0.01 * irr_mm - stress_day
-        
-        if terminated:
-            # Yield proxy: no robust Ky available, penalise heavily for total stress days
-            # Normalize it against total days
-            yield_penalty = -50.0 * (self.cumulative_stress_days / max(1.0, float(self.total_days)))
-            reward += yield_penalty
 
         info = {
             "depth": self.depth,

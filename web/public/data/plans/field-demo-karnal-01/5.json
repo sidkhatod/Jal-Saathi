@@ -1,0 +1,18 @@
+{
+  "field_id": "field-demo-karnal-01",
+  "week": 5,
+  "crop": "wheat",
+  "stage": "Crown Root Initiation",
+  "as_of_date": "2023-12-06",
+  "water": {
+    "action": "wait",
+    "advice": "Soil moisture is above management allowable depletion. No irrigation required this week.",
+    "reason_key": "moisture_adequate"
+  },
+  "leaves": {
+    "title": "What to look for this week",
+    "symptoms": "Inspect for uniform germination and root crown emergence. Watch for weed competition.",
+    "source": "HAU / ICAR-IIWBR reviewed advisory",
+    "kvk_note": "confirm with your KVK"
+  }
+}

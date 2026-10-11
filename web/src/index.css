@@ -1,3 +1,70 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+:root {
+  --bg-warm-cream: #FAF6EF;
+  --panel-white: rgba(255, 255, 255, 0.84);
+  --panel-white-solid: #FFFFFF;
+  --primary-sage: #6B9E7A;
+  --primary-sage-hover: #5A8C69;
+  --primary-sage-dark: #2F533B;
+  --water-blue: #8CC2DD;
+  --grain-sand: #EBCB8B;
+  --leaf-mint: #BFE0C8;
+  --alert-blush: #EBA896;
+  --ink: #26362F;
+  --muted-ink: #5F6F68;
+  --border-soft: rgba(38, 54, 47, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-warm-cream);
+  color: var(--ink);
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Nunito', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--primary-sage);
+  outline-offset: 2px;
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Soft card panel with gentle layered shadow */
+.soft-card {
+  background-color: var(--panel-white);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px;
+  box-shadow: 0 4px 20px -2px rgba(38, 54, 47, 0.05), 0 2px 6px -1px rgba(38, 54, 47, 0.03);
+  border: 1px solid var(--border-soft);
+}
+
+.soft-card-elevated {
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 28px;
+  box-shadow: 0 10px 30px -4px rgba(38, 54, 47, 0.08), 0 4px 10px -2px rgba(38, 54, 47, 0.04);
+  border: 1px solid rgba(38, 54, 47, 0.06);
+}

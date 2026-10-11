@@ -6,6 +6,7 @@ from stacks.data_stack import DataStack
 from stacks.table_stack import TableStack
 from stacks.roles_stack import RolesStack
 from stacks.api_stack import ApiStack
+from stacks.auth_stack import AuthStack
 
 app = cdk.App()
 
@@ -58,6 +59,13 @@ api_stack = ApiStack(
     advisories_table=table_stack.advisories_table,
     photos_bucket=data_stack.photos_bucket,
     twilio_secret_arn=data_stack.twilio_secret.secret_arn
+)
+
+auth_stack = AuthStack(
+    app,
+    f"JalSaathiAuthStack-{env_name}",
+    env=aws_env,
+    env_name=env_name
 )
 
 app.synth()

@@ -1,7 +1,11 @@
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
-from rl.utils import load_crop_config, get_forecast
+try:
+    from rl.utils import load_crop_config, get_forecast
+except ImportError:
+    from utils import load_crop_config, get_forecast
+
 
 class WheatEnv(gym.Env):
     """
@@ -44,11 +48,8 @@ class WheatEnv(gym.Env):
         low = np.zeros_like(high, dtype=np.float32)
         self.observation_space = spaces.Box(low=low, high=high, dtype=np.float32)
         
-        # Yield Ky constants from FAO-33 (Doorenbos and Kassam, 1979)
-        # Wheat overall seasonal Ky is ~1.05.
-        self.ky = 1.05
-        
         self.reset()
+
 
     def _get_kc(self, day_of_season):
         if day_of_season <= self.len_ini:
@@ -156,23 +157,8 @@ class WheatEnv(gym.Env):
         terminated = self.day_of_season >= self.total_days or self.current_day >= len(self.weather_data)
         truncated = False
         
-        # Reward
-        # Penalty for water applied (-0.01 per mm)
-        reward = -0.01 * irr_mm
-        # Penalty for stress (-1 per stress day)
-        reward -= stress_day
-        
-        if terminated:
-            # Add yield proxy reward at the end
-            # 1 - Ya/Ym = Ky * (1 - ETa/ETc)
-            # Ya/Ym = 1 - Ky * (1 - ETa/ETc)
-            if self.sum_etc > 0:
-                relative_yield = 1.0 - self.ky * (1.0 - (self.sum_eta / self.sum_etc))
-            else:
-                relative_yield = 0.0
-            
-            relative_yield = max(0.0, relative_yield)
-            reward += relative_yield * 100.0 # Huge bonus for yield
+        # Reward: -water penalty - stress penalty only
+        reward = -0.01 * irr_mm - stress_day
 
         info = {
             "dr": self.dr,
@@ -180,8 +166,7 @@ class WheatEnv(gym.Env):
             "eta": eta,
             "ks": ks,
             "water_applied": irr_mm,
-            "stress_days": self.cumulative_stress_days,
-            "relative_yield": max(0.0, 1.0 - self.ky * (1.0 - (self.sum_eta / max(1e-6, self.sum_etc))))
+            "stress_days": self.cumulative_stress_days
         }
         
         return self._get_obs(), reward, terminated, truncated, info

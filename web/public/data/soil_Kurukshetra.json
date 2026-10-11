@@ -1,0 +1,131 @@
+{
+  "district": "Kurukshetra",
+  "district_code": "68",
+  "nutrients": {
+    "Boron": {
+      "dominant_level": "Deficient",
+      "distribution": {
+        "Sufficient": 2095,
+        "Deficient": 4338
+      },
+      "level_used": "district",
+      "year_used": "2023-24",
+      "n_samples": 6433
+    },
+    "Copper": {
+      "dominant_level": "Sufficient",
+      "distribution": {
+        "Deficient": 56,
+        "Sufficient": 39150
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 39206
+    },
+    "Electrical Conductivity": {
+      "dominant_level": "Non Saline",
+      "distribution": {
+        "Non Saline": 38647,
+        "Saline": 559
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 39206
+    },
+    "Iron": {
+      "dominant_level": "Sufficient",
+      "distribution": {
+        "Sufficient": 37509,
+        "Deficient": 1697
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 39206
+    },
+    "Manganese": {
+      "dominant_level": "Sufficient",
+      "distribution": {
+        "Sufficient": 36583,
+        "Deficient": 2623
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 39206
+    },
+    "Nitrogen": {
+      "dominant_level": "Low",
+      "distribution": {
+        "Low": 2933,
+        "High": 5,
+        "Medium": 673
+      },
+      "level_used": "district",
+      "year_used": "2023-24",
+      "n_samples": 3611
+    },
+    "Organic Carbon": {
+      "dominant_level": "Low",
+      "distribution": {
+        "High": 27,
+        "Low": 36138,
+        "Medium": 3041
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 39206
+    },
+    "Phosphorus": {
+      "dominant_level": "High",
+      "distribution": {
+        "Medium": 7962,
+        "High": 30099,
+        "Low": 1145
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 39206
+    },
+    "Potassium": {
+      "dominant_level": "Medium",
+      "distribution": {
+        "Medium": 19472,
+        "High": 17386,
+        "Low": 2348
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 39206
+    },
+    "Soil Ph": {
+      "dominant_level": "Neutral",
+      "distribution": {
+        "Alkaline": 3070,
+        "Neutral": 36122,
+        "Acidic": 14
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 39206
+    },
+    "Sulphur": {
+      "dominant_level": "Sufficient",
+      "distribution": {
+        "Sufficient": 37869,
+        "Deficient": 1337
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 39206
+    },
+    "Zinc": {
+      "dominant_level": "Sufficient",
+      "distribution": {
+        "Sufficient": 37099,
+        "Deficient": 2107
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 39206
+    }
+  }
+}

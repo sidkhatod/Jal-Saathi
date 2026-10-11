@@ -1,0 +1,18 @@
+{
+  "Karnal": {
+    "name": "Karnal",
+    "state": "Haryana",
+    "latitude": 29.68,
+    "longitude": 76.99,
+    "is_pilot": true,
+    "soil_file": "soil_Karnal.json"
+  },
+  "Kurukshetra": {
+    "name": "Kurukshetra",
+    "state": "Haryana",
+    "latitude": 29.96,
+    "longitude": 76.82,
+    "is_pilot": true,
+    "soil_file": "soil_Kurukshetra.json"
+  }
+}

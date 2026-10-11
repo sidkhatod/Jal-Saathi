@@ -25,6 +25,8 @@ wheels/
 .venv/
 venv/
 .test_*/
+.lambda_layer/
+.lambda_decide_dist/
 
 
 # Node

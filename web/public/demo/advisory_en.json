@@ -1,0 +1,43 @@
+{
+  "plot_id": "plot-karnal-wheat-01",
+  "as_of_date": "2023-12-05",
+  "crop": "wheat",
+  "district": "Karnal",
+  "water": {
+    "action": "irrigate",
+    "amount_mm": 40.0,
+    "method": "rl_ppo",
+    "depletion_mm": 38.5,
+    "raw_mm": 37.5,
+    "taw_mm": 75.0,
+    "norm_depletion": 0.5133,
+    "advice": "Apply 40 mm irrigation based on root-zone depletion balance.",
+    "reason_key": "depletion_threshold_reached",
+    "confidence": 0.95
+  },
+  "protect": {
+    "status": "advice",
+    "disease_predicted": "wheat_rust",
+    "advice": "Symptoms of Wheat Rust (circular yellow pustules) detected. Maintain proper air flow, regulate moisture, and follow wider spacing.",
+    "weather_window": "check the weather window on the label",
+    "reason_key": "reviewed_advisory_active",
+    "confidence": 0.92
+  },
+  "nourish": {
+    "status": "confirm_with_kvk",
+    "advice": "confirm dose with KVK",
+    "soil_context": {
+      "level_used": "block",
+      "year_used": "2023-24",
+      "district": "Karnal",
+      "dominant_ratings": {
+        "Nitrogen": "Low",
+        "Phosphorus": "Medium",
+        "Potassium": "High"
+      }
+    },
+    "reason_key": "soil_health_rating_available",
+    "confidence": 0.85
+  },
+  "overall_confidence": 0.91
+}

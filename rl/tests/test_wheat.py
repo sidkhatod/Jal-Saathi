@@ -4,6 +4,8 @@ import numpy as np
 import pytest
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 from envs.wheat import WheatEnv
 
 # Mock soil hydraulics and weather
@@ -89,3 +91,50 @@ def test_determinism():
     assert np.allclose(obs1, obs2)
     assert np.allclose(next_obs1, next_obs2)
     assert r1 == r2
+
+def test_no_ky_and_reward_formulation():
+    weather = [MockWeather(0.0, 5.0) for _ in range(50)]
+    soil = MockSoil()
+    env = WheatEnv(weather, soil, start_day=0, noise_std_rain=0.0, noise_std_et0=0.0)
+    
+    assert not hasattr(env, 'ky'), "WheatEnv should not have a ky attribute"
+    
+    env.reset()
+    # Step with 20mm irrigation
+    _, reward, terminated, _, info = env.step(1)
+    # 20mm irr => water penalty = -0.2
+    # ks = 1.0 initially, so stress_day = 0.0
+    assert np.isclose(reward, -0.01 * 20.0)
+    assert "relative_yield" not in info
+    assert "ky" not in info
+
+def test_golden_obs_schema():
+    golden_path = os.path.join(os.path.dirname(__file__), '..', 'artifacts', 'golden_obs.json')
+    assert os.path.exists(golden_path), f"golden_obs.json not found at {golden_path}"
+    import json
+    with open(golden_path, 'r') as f:
+        data = json.load(f)
+    assert len(data) == 5, f"Expected 5 golden observation pairs, got {len(data)}"
+    for item in data:
+        assert "observation" in item
+        assert "onnx_action" in item
+        assert len(item["observation"]) == 9
+        assert isinstance(item["onnx_action"], int)
+
+def test_wheat_replay_schema():
+    weather = [MockWeather(0.0, 5.0) for _ in range(5)]
+    soil = MockSoil()
+    env = WheatEnv(weather, soil, start_day=0, noise_std_rain=0.0, noise_std_et0=0.0)
+    
+    from train import evaluate_policy_single_env
+    def dummy_policy(obs, env): return 0
+    _, _, _, replay, _ = evaluate_policy_single_env(dummy_policy, env, num_episodes=1)
+    
+    assert len(replay) == 1
+    assert len(replay[0]) > 0
+    first_step = replay[0][0]
+    for key in ["day", "depletion_mm", "action_mm", "water_applied", "etc"]:
+        assert key in first_step, f"Missing key {key} in wheat replay"
+
+
+

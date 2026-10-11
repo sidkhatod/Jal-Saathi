@@ -1,0 +1,34 @@
+{
+  "field_id": "field-demo-karnal-01",
+  "week": 6,
+  "crop": "wheat",
+  "stage": "Crown Root Initiation",
+  "as_of_date": "2023-12-13",
+  "water": {
+    "action": "irrigate",
+    "amount_mm": 40.0,
+    "advice": "Apply 40 mm irrigation based on root-zone depletion balance for Crown Root Initiation stage.",
+    "reason_key": "depletion_threshold_reached"
+  },
+  "leaves": {
+    "title": "What to look for this week",
+    "symptoms": "Circular pinhead-sized lesions or yellow pustules on lower leaves, turning yellow and withering off early.",
+    "cultural_advice": "Maintain proper air flow and regulate irrigation moisture.",
+    "source": "HAU / ICAR-IIWBR reviewed advisory",
+    "kvk_note": "confirm with your KVK"
+  },
+  "feed": {
+    "advice": "Apply split dose of nitrogen before irrigation per local recommendations.",
+    "soil_context": {
+      "level_used": "district",
+      "year_used": "2023-24",
+      "district": "Karnal",
+      "dominant_ratings": {
+        "Nitrogen": "Low",
+        "Phosphorus": "High",
+        "Potassium": "High"
+      }
+    },
+    "kvk_note": "confirm dose with your KVK"
+  }
+}

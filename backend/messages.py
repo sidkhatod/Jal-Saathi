@@ -32,3 +32,63 @@ MESSAGES = {
         "error": "एक त्रुटि हुई, कृपया पुनः प्रयास करें।"
     }
 }
+
+
+# -------------------------------------------------------------------
+# Standard 5-Line Advisory Templates (WATER / LEAVES / FEED)
+# -------------------------------------------------------------------
+
+ADVISORY_TEMPLATES = {
+    "en": (
+        "🌾 *Jal-Saathi Weekly Advisory ({as_of_date})*\n"
+        "💧 WATER: {water_advice} ({water_amount} mm)\n"
+        "🍃 LEAVES: {protect_advice} (Window: {weather_window})\n"
+        "🌱 FEED: {nourish_advice} (Soil Context: {soil_context})\n"
+        "ℹ️ Confidence: {confidence}% | Powered by Jal-Saathi"
+    ),
+    "hi": (
+        "🌾 *जल-साथी साप्ताहिक सलाह ({as_of_date})*\n"
+        "💧 सिंचाई (WATER): {water_advice} ({water_amount} मिमी)\n"
+        "🍃 फसल सुरक्षा (LEAVES): {protect_advice} (समय: {weather_window})\n"
+        "🌱 पोषण (FEED): {nourish_advice} (मिट्टी स्थिति: {soil_context})\n"
+        "ℹ️ विश्वसनीयता: {confidence}% | जल-साथी द्वारा संचालित"
+    )
+}
+
+
+def format_advisory_message(advisory: dict, lang: str = "en") -> str:
+    """
+    Formats a DecisionResponse dictionary into a standard 5-line WhatsApp advisory message.
+    """
+    template = ADVISORY_TEMPLATES.get(lang, ADVISORY_TEMPLATES["en"])
+
+    water = advisory.get("water", {})
+    protect = advisory.get("protect", {})
+    nourish = advisory.get("nourish", {})
+    soil_ctx = nourish.get("soil_context")
+
+    if soil_ctx and isinstance(soil_ctx, dict):
+        dominant = soil_ctx.get("dominant_ratings", {})
+        dom_str = ", ".join(f"{k}:{v}" for k, v in dominant.items()) if dominant else "Available"
+        soil_summary = f"{soil_ctx.get('level_used', 'district')} ({dom_str})"
+    else:
+        soil_summary = "KVK consultation recommended"
+
+    water_advice = water.get("advice", "Follow routine watering.")
+    water_amount = int(water.get("amount_mm", 0.0))
+    protect_advice = protect.get("advice", "Crop foliage healthy.")
+    weather_window = protect.get("weather_window", "check label")
+    nourish_advice = nourish.get("advice", "confirm dose with KVK")
+    confidence_pct = int(round(advisory.get("overall_confidence", 0.85) * 100))
+
+    return template.format(
+        as_of_date=advisory.get("as_of_date", "Today"),
+        water_advice=water_advice,
+        water_amount=water_amount,
+        protect_advice=protect_advice,
+        weather_window=weather_window,
+        nourish_advice=nourish_advice,
+        soil_context=soil_summary,
+        confidence=confidence_pct,
+    )
+

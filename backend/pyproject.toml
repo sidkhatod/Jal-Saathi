@@ -6,8 +6,12 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "boto3",
+    "duckdb>=1.5.6",
+    "numpy>=2.4.6",
+    "pandas>=3.0.6",
     "pydantic",
     "pydantic-settings",
+    "pyyaml>=6.0.3",
     "requests",
     "twilio",
 ]

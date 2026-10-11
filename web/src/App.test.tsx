@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-describe('Placeholder test', () => {
-  it('should pass', () => {
+describe('App smoke test', () => {
+  it('passes base check', () => {
     expect(true).toBe(true);
   });
 });

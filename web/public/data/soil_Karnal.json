@@ -1,0 +1,125 @@
+{
+  "district": "Karnal",
+  "district_code": "67",
+  "nutrients": {
+    "Boron": {
+      "dominant_level": "Deficient",
+      "distribution": {
+        "Sufficient": 28,
+        "Deficient": 6369
+      },
+      "level_used": "district",
+      "year_used": "2023-24",
+      "n_samples": 6397
+    },
+    "Copper": {
+      "dominant_level": "Sufficient",
+      "distribution": {
+        "Sufficient": 14026
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 14026
+    },
+    "Electrical Conductivity": {
+      "dominant_level": "Non Saline",
+      "distribution": {
+        "Saline": 2,
+        "Non Saline": 14024
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 14026
+    },
+    "Iron": {
+      "dominant_level": "Sufficient",
+      "distribution": {
+        "Deficient": 32,
+        "Sufficient": 13994
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 14026
+    },
+    "Manganese": {
+      "dominant_level": "Sufficient",
+      "distribution": {
+        "Deficient": 62,
+        "Sufficient": 13964
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 14026
+    },
+    "Nitrogen": {
+      "dominant_level": "Low",
+      "distribution": {
+        "Low": 4
+      },
+      "level_used": "district",
+      "year_used": "2023-24",
+      "n_samples": 4
+    },
+    "Organic Carbon": {
+      "dominant_level": "Low",
+      "distribution": {
+        "Low": 7362,
+        "Medium": 6624,
+        "High": 40
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 14026
+    },
+    "Phosphorus": {
+      "dominant_level": "High",
+      "distribution": {
+        "Medium": 22,
+        "High": 12856,
+        "Low": 1148
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 14026
+    },
+    "Potassium": {
+      "dominant_level": "High",
+      "distribution": {
+        "High": 12242,
+        "Low": 52,
+        "Medium": 1732
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 14026
+    },
+    "Soil Ph": {
+      "dominant_level": "Neutral",
+      "distribution": {
+        "Alkaline": 621,
+        "Neutral": 13405
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 14026
+    },
+    "Sulphur": {
+      "dominant_level": "Sufficient",
+      "distribution": {
+        "Sufficient": 14026
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 14026
+    },
+    "Zinc": {
+      "dominant_level": "Sufficient",
+      "distribution": {
+        "Sufficient": 14026
+      },
+      "level_used": "district",
+      "year_used": "2024-25",
+      "n_samples": 14026
+    }
+  }
+}
